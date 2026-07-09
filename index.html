@@ -364,8 +364,8 @@ body{display:flex;flex-direction:column;overflow:hidden;}
 .tl-dir-btn.on.dn{background:rgba(255,107,74,.15);border-color:var(--dn);color:var(--dn);}
 .tl-zoom-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .tl-zoom-label{font-size:10px;font-weight:700;color:var(--mt2);white-space:nowrap;font-family:'JetBrains Mono',monospace;min-width:34px;}
-.tl-zoom-slider{-webkit-appearance:none;width:90px;height:4px;border-radius:2px;background:var(--bdr2);outline:none;cursor:pointer;}
-.tl-zoom-slider::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;box-shadow:0 0 5px rgba(59,158,255,.5);}
+.tl-zoom-slider{-webkit-appearance:none;appearance:none;width:90px;height:4px;border-radius:2px;background:var(--bdr2);outline:none;cursor:pointer;}
+.tl-zoom-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;box-shadow:0 0 5px rgba(59,158,255,.5);}
 .tl-flag-info{font-size:9.5px;color:var(--red);font-weight:700;white-space:nowrap;display:none;}
 .tl-flag-info.show{display:block;}
 #tl-tooltip{position:fixed;background:var(--surf);border:1px solid var(--bdr2);border-radius:7px;padding:8px 11px;font-size:10.5px;color:var(--tx);pointer-events:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);min-width:170px;display:none;line-height:1.7;}
@@ -2605,6 +2605,20 @@ function renderKiji(){
   }).join('');
 }
 
+function enableClickToDelete(){
+  document.addEventListener('click', function(e){
+    const target=e.target;
+    if(!(target instanceof Element)) return;
+    const blocked=target.closest('button, select, input, textarea, a, .hdr, .tabs, .ctrl, .stbar, .tl-controls, .theme-tog, .dia-sel, .si');
+    if(blocked) return;
+    const removable=target.closest('.ri, .ovc, .trc, .tpi, .stop, .lm-wrap, .rh, .stats, .now-card, .st-wrap, .kn-sticky, .kn-table-wrap, .kn-table tbody tr');
+    if(removable){
+      removable.remove();
+      e.stopPropagation();
+    }
+  }, true);
+}
+
 // ── AUTO REFRESH ──
 setInterval(()=>{
   renderLineMap();buildDiaNumGrid();
@@ -2624,7 +2638,7 @@ setInterval(()=>{
 
 // ── INIT ──
 autoSetKind();tick();setInterval(tick,1000);
-buildDiaNumGrid();buildStnGrid();renderLineMap();renderKiji();
+buildDiaNumGrid();buildStnGrid();renderLineMap();renderKiji();enableClickToDelete();
 </script>
 
 <div id="tl-tooltip"></div>
