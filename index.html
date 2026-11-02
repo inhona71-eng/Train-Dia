@@ -376,6 +376,38 @@ body{display:flex;flex-direction:column;overflow:hidden;}
 #tl-tooltip .tt-flag{color:var(--red);font-weight:800;}
 .tl-bar-g:hover rect{filter:brightness(1.25);}
 .tl-bar-g{cursor:pointer;}
+
+/* ── 임시공휴일 관리 ── */
+.hm-hdr-btn{background:rgba(249,115,22,.15);border:1px solid var(--up);color:var(--up);
+  border-radius:8px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;margin-right:6px;}
+.hm-hdr-btn:hover{background:rgba(249,115,22,.3);}
+#holidayMgr{display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.65);align-items:center;justify-content:center;}
+.hm-box{background:var(--surf);border:1px solid var(--bdr2);border-radius:14px;
+  width:400px;max-width:96vw;padding:22px;box-shadow:0 8px 40px rgba(0,0,0,.5);}
+.hm-title{font-size:15px;font-weight:800;color:var(--acc);margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;}
+.hm-section{margin-bottom:14px;}
+.hm-lbl{font-size:11px;font-weight:700;color:var(--mt2);margin-bottom:6px;letter-spacing:.4px;}
+.hm-inp-row{display:flex;gap:6px;margin-bottom:8px;}
+.hm-inp{flex:1;background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;
+  padding:8px 10px;color:var(--tx);font-size:13px;font-family:'JetBrains Mono',monospace;outline:none;}
+.hm-inp:focus{border-color:var(--acc);}
+.hm-add{padding:8px 14px;border:none;border-radius:7px;font-size:12px;font-weight:700;
+  cursor:pointer;background:var(--acc);color:#fff;}
+.hm-add.sp{background:#f87171;}
+.hm-list{max-height:110px;overflow-y:auto;background:var(--surf2);border-radius:7px;padding:4px;}
+.hm-row{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;
+  font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--tx);
+  border-bottom:1px solid var(--bdr);}
+.hm-row:last-child{border-bottom:none;}
+.hm-row button{background:none;border:none;color:#f87171;cursor:pointer;font-size:14px;padding:0 4px;}
+.hm-empty{padding:8px;font-size:12px;color:var(--mt2);text-align:center;}
+.hm-note{font-size:10px;color:var(--mt2);margin-top:10px;line-height:1.6;
+  background:var(--surf2);border-radius:7px;padding:8px 10px;}
+.hm-close{width:100%;padding:9px;border:1px solid var(--bdr2);border-radius:7px;
+  background:none;color:var(--mt2);font-size:13px;font-weight:700;cursor:pointer;margin-top:8px;}
+.hm-close:hover{background:var(--surf2);}
 </style>
 </head>
 <body>
@@ -388,6 +420,7 @@ body{display:flex;flex-direction:column;overflow:hidden;}
     <button class="t-btn" id="btnLight" onclick="setTheme('light')">☀️ 라이트</button>
   </div>
   <div class="hdr-date" id="hdrDate"></div>
+  <button class="hm-hdr-btn" onclick="openHolidayMgr()" title="임시 공휴일 등록/삭제">📅 공휴일</button>
   <div class="hdr-clock" id="hdrClock">--:--:--</div>
 </header>
 <div class="layout">
@@ -844,8 +877,7 @@ const DIA_DATA = {
       "1211": [["20:50:00", "소태"], ["20:51:40", "증심사입구"], ["20:53:20", "남광주"], ["20:55:10", "문화전당"], ["20:56:40", "금남로4가"], ["20:58:00", "금남로5가"], ["21:00:00", "양동시장"], ["21:01:30", "돌고개"], ["21:03:40", "농성"], ["21:05:00", "화정"], ["21:06:30", "쌍촌"], ["21:08:10", "운천"], ["21:10:00", "상무"], ["21:11:30", "김대중센터"], ["21:14:50", "공항"], ["21:16:40", "송정공원"], ["21:18:30", "광주송정"], ["21:20:00", "도산"], ["21:22:30", "평동"]],
       "1220": [["21:32:30", "평동"], ["21:35:00", "도산"], ["21:36:30", "광주송정"], ["21:38:20", "송정공원"], ["21:40:10", "공항"], ["21:43:30", "김대중센터"], ["21:45:00", "상무"], ["21:46:50", "운천"], ["21:48:30", "쌍촌"], ["21:50:00", "화정"], ["21:51:20", "농성"], ["21:53:30", "돌고개"], ["21:55:00", "양동시장"], ["21:57:00", "금남로5가"], ["21:58:20", "금남로4가"], ["21:59:50", "문화전당"], ["22:01:40", "남광주"], ["22:03:20", "증심사입구"], ["22:05:00", "소태"], ["22:10:30", "녹동"]],
       "1229": [["22:17:30", "녹동"], ["22:23:00", "소태"], ["22:24:40", "증심사입구"], ["22:26:20", "남광주"], ["22:28:10", "문화전당"], ["22:29:40", "금남로4가"], ["22:31:00", "금남로5가"], ["22:33:00", "양동시장"], ["22:34:30", "돌고개"], ["22:36:40", "농성"], ["22:38:00", "화정"], ["22:39:30", "쌍촌"], ["22:41:10", "운천"], ["22:43:00", "상무"], ["22:44:30", "김대중센터"], ["22:47:50", "공항"], ["22:49:40", "송정공원"], ["22:51:30", "광주송정"], ["22:53:00", "도산"], ["22:55:30", "평동"]],
-      "1236": [["23:01:30", "평동"], ["23:04:00", "도산"], ["23:05:30", "광주송정"], ["23:07:20", "송정공원"], ["23:09:10", "공항"], ["23:12:30", "김대중센터"], ["23:14:00", "상무"], ["23:15:50", "운천"], ["23:17:30", "쌍촌"], ["23:19:00", "화정"], ["23:20:20", "농성"], ["23:22:30", "돌고개"], ["23:24:00", "양동시장"], ["23:26:00", "금남로5가"], ["23:27:20", "금남로4가"], ["23:28:50", "문화전당"], ["23:30:40", "남광주"], ["23:32:20", "증심사입구"], ["23:34:00", "소태"]],
-      "1938": [["23:39:00", "기지입고(소태→기지)"]],
+      "1236": [["23:01:30", "평동"], ["23:04:00", "도산"], ["23:05:30", "광주송정"], ["23:07:20", "송정공원"], ["23:09:10", "공항"], ["23:12:30", "김대중센터"], ["23:14:00", "상무"], ["23:15:50", "운천"], ["23:17:30", "쌍촌"], ["23:19:00", "화정"], ["23:20:20", "농성"], ["23:22:30", "돌고개"], ["23:24:00", "양동시장"], ["23:26:00", "금남로5가"], ["23:27:20", "금남로4가"], ["23:28:50", "문화전당"], ["23:30:40", "남광주"], ["23:32:20", "증심사입구"], ["23:34:00", "소태"], ["23:39:30", "녹동"]],
     },
     25: {
       "1175": [["18:23:00", "소태"], ["18:24:40", "증심사입구"], ["18:26:20", "남광주"], ["18:28:10", "문화전당"], ["18:29:40", "금남로4가"], ["18:31:00", "금남로5가"], ["18:33:00", "양동시장"], ["18:34:30", "돌고개"], ["18:36:40", "농성"], ["18:38:00", "화정"], ["18:39:30", "쌍촌"], ["18:41:10", "운천"], ["18:43:00", "상무"], ["18:44:30", "김대중센터"], ["18:47:50", "공항"], ["18:49:40", "송정공원"], ["18:51:30", "광주송정"], ["18:53:00", "도산"], ["18:55:30", "평동"]],
@@ -1880,6 +1912,47 @@ function sortByTime(runs){
 }
 
 // ── 시계 & 테마 ──
+
+// ══ 임시 공휴일 관리 ══
+function openHolidayMgr(){
+  loadExtraHolidays();
+  const hArr  = JSON.parse(localStorage.getItem('extraHolidays')||'[]');
+  const spArr = JSON.parse(localStorage.getItem('extraHolidaysSp')||'[]');
+  const mkRows = (arr, isSp) => arr.length
+    ? arr.map(d=>`<div class="hm-row"><span>${d}</span>
+        <button onclick="removeHoliday('${d}',${isSp})">✕</button></div>`).join('')
+    : '<div class="hm-empty">등록된 날짜 없음</div>';
+  document.getElementById('hmHolList').innerHTML = mkRows(hArr, false);
+  document.getElementById('hmSpList').innerHTML  = mkRows(spArr, true);
+  document.getElementById('holidayMgr').style.display='flex';
+}
+function closeHolidayMgr(){
+  document.getElementById('holidayMgr').style.display='none';
+}
+function addHoliday(isSp){
+  const id  = isSp ? 'hmSpInp' : 'hmHolInp';
+  const val = document.getElementById(id).value.trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(val)){alert('날짜 형식: YYYY-MM-DD');return;}
+  const key = isSp ? 'extraHolidaysSp' : 'extraHolidays';
+  const arr = JSON.parse(localStorage.getItem(key)||'[]');
+  if(arr.includes(val)){alert('이미 등록된 날짜입니다');return;}
+  arr.push(val); arr.sort();
+  localStorage.setItem(key, JSON.stringify(arr));
+  if(isSp) HOLIDAYS_SPECIAL.add(val); else HOLIDAYS.add(val);
+  document.getElementById(id).value='';
+  openHolidayMgr();
+  autoSetKind();
+  alert(val+' 등록 완료 — 다이아가 자동 갱신됩니다');
+}
+function removeHoliday(date, isSp){
+  const key = isSp ? 'extraHolidaysSp' : 'extraHolidays';
+  const arr = JSON.parse(localStorage.getItem(key)||'[]').filter(d=>d!==date);
+  localStorage.setItem(key, JSON.stringify(arr));
+  if(isSp) HOLIDAYS_SPECIAL.delete(date); else HOLIDAYS.delete(date);
+  openHolidayMgr();
+  autoSetKind();
+}
+
 function tick(){
   const n=new Date();
   document.getElementById('hdrClock').textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
@@ -1896,7 +1969,16 @@ function setTheme(t){
 (()=>{const s=localStorage.getItem('gwangju_theme')||'dark';setTheme(s);})();
 
 // ── 법정공휴일 기반 다이아 자동 선택 ──
+function loadExtraHolidays(){
+  try{
+    const h=localStorage.getItem('extraHolidays');
+    if(h) JSON.parse(h).forEach(d=>HOLIDAYS.add(d));
+    const s=localStorage.getItem('extraHolidaysSp');
+    if(s) JSON.parse(s).forEach(d=>HOLIDAYS_SPECIAL.add(d));
+  }catch(e){}
+}
 function autoSetKind(){
+  loadExtraHolidays();
   const now=new Date();
   const ds=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
   const dow=now.getDay();
@@ -2627,5 +2709,40 @@ buildDiaNumGrid();buildStnGrid();renderLineMap();renderKiji();
 </script>
 
 <div id="tl-tooltip"></div>
+
+<!-- ── 임시공휴일 관리 모달 ── -->
+<div id="holidayMgr" onclick="if(event.target===this)closeHolidayMgr()">
+  <div class="hm-box">
+    <div class="hm-title">📅 임시 공휴일 관리
+      <span style="font-size:10px;color:var(--mt2);font-weight:400;margin-left:auto;">브라우저에 저장됨</span>
+    </div>
+    <div class="hm-section">
+      <div class="hm-lbl">🟠 휴일·공휴일 (일반) — 일요일·휴일 DIA 적용</div>
+      <div class="hm-inp-row">
+        <input class="hm-inp" id="hmHolInp" placeholder="예: 2026-05-01" maxlength="10"
+          onkeydown="if(event.key==='Enter')addHoliday(false)">
+        <button class="hm-add" onclick="addHoliday(false)">추가</button>
+      </div>
+      <div class="hm-list" id="hmHolList"></div>
+    </div>
+    <div class="hm-section">
+      <div class="hm-lbl">🔴 명절 연휴 — 명절 DIA 적용</div>
+      <div class="hm-inp-row">
+        <input class="hm-inp" id="hmSpInp" placeholder="예: 2026-02-17" maxlength="10"
+          onkeydown="if(event.key==='Enter')addHoliday(true)">
+        <button class="hm-add sp" onclick="addHoliday(true)">추가</button>
+      </div>
+      <div class="hm-list" id="hmSpList"></div>
+    </div>
+    <div class="hm-note">
+      💡 <b>사용법</b><br>
+      · 5/1 노동절, 7/17 제헌절 등 임시 공휴일은 🟠란에 등록<br>
+      · 등록 즉시 다이아 종류가 자동 전환됩니다<br>
+      · 브라우저 localStorage에 저장 → 새로고침 후에도 유지<br>
+      · ✕ 버튼으로 언제든 삭제 가능
+    </div>
+    <button class="hm-close" onclick="closeHolidayMgr()">✕ 닫기</button>
+  </div>
+</div>
 </body>
 </html>
